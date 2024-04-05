@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import cv2  # OpenCVライブラリ
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
@@ -58,22 +59,25 @@ class DataSet:
             coefficients, _ =  wavdata.generate_coefficients()
             self.add_to_dataset(start_num + i, coefficients, y)
 
+    def csv_to_dataset(self, path, csv_path, start_num):
+        df = pd.read_csv(csv_path)        
+        for index, row in df.iterrows():            
+            wav = Audio(path / row['wav_file_name'])
+            wavdata = Wavelet(wav.sample_rate, wav.trimmed_data, )
+            coefficients, _ =  wavdata.generate_coefficients()                        
+            self.add_to_dataset(start_num + index, coefficients, row['intake_volume'])
+
+
     def print_label(self): 
         print(self.y)
 
     def print_data(self):
         print(self.data)
 
-if __name__ == "__main__":
-    print("hello")
-    path = pathlib.Path('C:/Users/S2/Documents/デバイス作成/2023測定デバイス/swallowing/dataset/washino/voice/voice1.wav')
-    wav1 = Audio(path)
-    swallowing1 = Wavelet(wav1.sample_rate, wav1.trimmed_data, )
-    coefficients, _ =  swallowing1.generate_coefficients()
-    data = DataSet(1, 224, 224, 3)
-    y = np.array(0.2)
-    data.add_to_dataset(0, coefficients, y)
-    print(data.X.shape)
-    print(data.X[0][1][100][0])
-    print(data.y)
+if __name__ == "__main__":    
+    path = pathlib.Path('C:/Users/S2/Documents/デバイス作成/2023測定デバイス/flueid_intake/dataset/fake_data')
+    csv_path = path / 'fake_data.csv'
+    data = DataSet(100, 224, 224, 3)
+    data.csv_to_dataset(path, csv_path, 0)    
+    print(data.X)
     
