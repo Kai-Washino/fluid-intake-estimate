@@ -2,6 +2,7 @@ from tensorflow.keras.applications import DenseNet121
 from tensorflow.keras.layers import GlobalAveragePooling2D, Dense
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
+from sklearn.metrics import r2_score, mean_absolute_error
 import numpy as np
 
 class DenceNet:
@@ -37,10 +38,19 @@ class DenceNet:
         # モデルによる予測
         self.predictions = self.model.predict(X_test)
         
+        r2 = r2_score(self.predictions, y_test)
+        print("r2: ", r2)
+        
+        mae = mean_absolute_error(self.predictions, y_test)
+        print("MAE: ", mae)
+        
         if print_value:
         # 予測値と実際の値を表示（オプション）
             for i in range(len(X_test)):
                 print(f"サンプル {i}: 正解 = {y_test[i]}, 予測 = {self.predictions[i]}")
+    
+    def save(self, file_name):
+        self.model.save(file_name)
 
 if __name__ == "__main__":
     from .data_set import DataSet
