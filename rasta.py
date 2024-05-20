@@ -36,7 +36,8 @@ class RASTA:
         if signal_length > padlen:
             filtered_log_spectrum = scipy.signal.filtfilt(b, a, log_spectrum, axis=1)
         else:
-            raise ValueError(f"The length of the input vector x must be greater than padlen ({padlen}).")
+            print(f"The length of the input vector x must be greater than padlen ({padlen}). Returning 0.")
+            return np.zeros(self.data.shape)
         
         # 逆対数圧縮
         filtered_spectrum = np.exp(filtered_log_spectrum)
