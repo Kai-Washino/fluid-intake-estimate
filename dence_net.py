@@ -15,7 +15,7 @@ class DenceNet:
 
         # モデルのコンパイル
         self.model.compile(optimizer='adam',
-                           loss='mean_squared_error',
+                           loss='huber_loss',
                            metrics=['mean_absolute_error', 'mean_squared_error'])
         
     def training(self, X_train, y_train, epochs, batch_size, early_stopping = None, model_checkpoint = None):
