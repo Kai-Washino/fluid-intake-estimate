@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import pathlib
 import sys
 import os
@@ -16,7 +17,7 @@ sys.path.append(swallowing_recognize_dir)
 import swallowing_recognition
 from swallowing_recognition.wavelet import Wavelet
 from swallowing_recognition.audio import Audio
-
+from swallowing_recognition.fft import FFT
 
 class VariableDataSet(DataSet):
     def __init__(self, num_samples, scale = 127, time_range = 70000, dimension = None):
@@ -50,7 +51,21 @@ class VariableDataSet(DataSet):
             pca = PCA(n_components= self.dimension)  # 100次元に削減
             transformed_data = pca.fit_transform(data)
             return transformed_data
-        
+    
+    def csv_to_dataset(self, path, csv_path, start_num, signal_processing = "wavelet"):
+        df = pd.read_csv(csv_path)        
+        for index, row in df.iterrows():            
+            wav = Audio(path / row['wav_file_name'])
+            if signal_processing == 'wavelet':
+                wavdata = Wavelet(wav.sample_rate, wav.trimmed_data, )
+                coefficients, _ =  wavdata.generate_coefficients()                        
+                self.add_to_dataset(start_num + index, coefficients, row['intake_volume'])
+            elif signal_processing == 'fft':
+                wavdata = FFT(wav.sample_rate, wav.trimmed_data, )
+                spectrogram = wavdata.generate_spectrogram()
+                self.add_to_dataset(start_num + i, spectrogram, y)
+
+
             
     def trim_or_pad(self, data):
         current_length = data.shape[1]        
@@ -68,8 +83,8 @@ class VariableDataSet(DataSet):
             return data  
 
 if __name__ == "__main__":    
-    path = pathlib.Path('C:/Users/S2/Documents/デバイス作成/2024測定デバイス/flueid_intake/dataset/fake_data')
-    csv_path = path / 'fake_data.csv'
-    data = VariableDataSet(100)
-    data.csv_to_dataset(path, csv_path, 0)    
+    path = pathlib.Path('C:/Users/S2/Documents/デバイス作成/2024測定デバイス/fluid_intake/dataset/ibuki')
+    csv_path = path / 'ibuki.csv'
+    data = VariableDataSet(30)
+    data.csv_to_dataset(path, csv_path, 0, signal_processing='fft')    
     print(data.X.shape)
