@@ -5,6 +5,7 @@ import sys
 import os
 
 from sklearn.decomposition import PCA
+from sklearn.preprocessing import MinMaxScaler
 
 from .data_set import DataSet
 from .rasta import RASTA
@@ -34,8 +35,8 @@ class VariableDataSet(DataSet):
         self.y = np.zeros(num_samples)        
 
     def add_to_dataset(self, i, data, y):        
-        if type(data) == tuple:
-            spectrogram = np.abs(data)        
+        if isinstance(data, tuple):
+            spectrogram = np.abs(data)
         else:
             spectrogram = data         
         
@@ -44,12 +45,12 @@ class VariableDataSet(DataSet):
             print(i)
             print(spectrogram)
             return 
-        
-        spectrogram = np.abs(data)        
-        min_val = spectrogram.min()
-        max_val = spectrogram.max()
-        normalized_spectrogram = (spectrogram - min_val) / (max_val - min_val)        
-        
+                
+        scaler_X = MinMaxScaler()
+        if spectrogram.ndim == 1:
+            spectrogram = spectrogram.reshape(-1, 1)  # 1次元配列を2次元配列に変換
+        normalized_spectrogram = scaler_X.fit_transform(spectrogram).flatten()
+                              
         if self.dimension is None:
             data = self.trim_or_pad(normalized_spectrogram)        
         else:
@@ -93,11 +94,13 @@ class VariableDataSet(DataSet):
             if current_length > self.time_range:
                 # トリミング            
                 trimmed_data = data[:self.time_range]
+                print("trimming")
                 return trimmed_data
             elif current_length < self.time_range:
                 # パディング
                 padding_length = self.time_range - current_length
                 padded_data = np.pad(data, (0, padding_length), mode='constant', constant_values=0)
+                print("padding")
                 return padded_data
             else:
                 # そのまま返す
