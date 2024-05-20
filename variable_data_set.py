@@ -93,14 +93,12 @@ class VariableDataSet(DataSet):
             current_length = data.shape[0]
             if current_length > self.time_range:
                 # トリミング            
-                trimmed_data = data[:self.time_range]
-                print("trimming")
+                trimmed_data = data[:self.time_range]                
                 return trimmed_data
             elif current_length < self.time_range:
                 # パディング
                 padding_length = self.time_range - current_length
-                padded_data = np.pad(data, (0, padding_length), mode='constant', constant_values=0)
-                print("padding")
+                padded_data = np.pad(data, (0, padding_length), mode='constant', constant_values=0)                
                 return padded_data
             else:
                 # そのまま返す
