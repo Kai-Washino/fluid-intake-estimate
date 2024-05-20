@@ -8,16 +8,17 @@ from sklearn.preprocessing import StandardScaler
 from .dence_net import DenceNet
 
 class MLP(DenceNet): 
-    def __init__(self, dimension = 30000, num_class = 2):
-        self.num_class = num_class        
+    def __init__(self, time_range = 30000):         
         self.model = Sequential([
-            Masking(mask_value=0.0, input_shape=(dimension,)),
+            Masking(mask_value=0.0, input_shape=(time_range,)),
             Flatten(),
             Dense(64, activation='relu'),
             Dense(64, activation='relu'),
-            Dense(1, activation='sigmoid')
+            Dense(1, activation='linear')
         ])
-        self.model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+        self.model.compile(optimizer='adam', 
+                           loss='mean_squared_error',
+                           metrics=['mean_absolute_error', 'mean_squared_error'])
 
 
 
