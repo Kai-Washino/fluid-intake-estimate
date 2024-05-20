@@ -30,8 +30,19 @@ class VariableDataSet(DataSet):
             self.X = np.zeros((num_samples, scale, self.dimension))
         self.y = np.zeros(num_samples)        
 
-    def add_to_dataset(self, i, coefficients, y):        
-        spectrogram = np.abs(coefficients)        
+    def add_to_dataset(self, i, data, y):        
+        if type(data) == tuple:
+            spectrogram = np.abs(data)        
+        else:
+            spectrogram = data         
+            
+        if len(spectrogram) == 0:
+            print("Warning: No data available for FFT.") 
+            print(i)
+            print(spectrogram)
+            return 
+        
+        spectrogram = np.abs(data)        
         min_val = spectrogram.min()
         max_val = spectrogram.max()
         normalized_spectrogram = (spectrogram - min_val) / (max_val - min_val)        
@@ -63,7 +74,7 @@ class VariableDataSet(DataSet):
             elif signal_processing == 'fft':
                 wavdata = FFT(wav.sample_rate, wav.trimmed_data, )
                 spectrogram = wavdata.generate_spectrogram()
-                self.add_to_dataset(start_num + i, spectrogram, y)
+                self.add_to_dataset(start_num + index, spectrogram,  row['intake_volume'])
 
 
             
@@ -85,6 +96,6 @@ class VariableDataSet(DataSet):
 if __name__ == "__main__":    
     path = pathlib.Path('C:/Users/S2/Documents/デバイス作成/2024測定デバイス/fluid_intake/dataset/ibuki')
     csv_path = path / 'ibuki.csv'
-    data = VariableDataSet(30)
+    data = VariableDataSet(30, scale=222)
     data.csv_to_dataset(path, csv_path, 0, signal_processing='fft')    
     print(data.X.shape)
