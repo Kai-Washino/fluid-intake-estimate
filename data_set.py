@@ -28,6 +28,7 @@ class DataSet:
         self.channels = channels
         self.X = np.zeros((num_samples, img_height, img_width, channels))
         self.y = np.zeros(num_samples)
+        self.length = []
 
     def add_to_dataset(self, i, coefficients, y):
         spectrogram = np.abs(coefficients)
@@ -55,6 +56,7 @@ class DataSet:
         file_names = self.get_wav_files(folder_name)
         for i, file_name in enumerate(file_names):
             wav = Audio(folder_name / file_name)
+            self.length.append(wav.length)
             wavdata = Wavelet(wav.sample_rate, wav.trimmed_data, )
             coefficients, _ =  wavdata.generate_coefficients()
             self.add_to_dataset(start_num + i, coefficients, y)

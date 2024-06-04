@@ -32,7 +32,8 @@ class VariableDataSet(DataSet):
             self.X = np.zeros((num_samples, scale, self.time_range))
         else:
             self.X = np.zeros((num_samples, scale, self.dimension))
-        self.y = np.zeros(num_samples)        
+        self.y = np.zeros(num_samples)     
+        self.length = []
 
     def add_to_dataset(self, i, data, y):        
         if isinstance(data, tuple):
@@ -70,7 +71,8 @@ class VariableDataSet(DataSet):
     def csv_to_dataset(self, path, csv_path, start_num, signal_processing = "wavelet"):
         df = pd.read_csv(csv_path)        
         for index, row in df.iterrows():            
-            wav = Audio(path / row['wav_file_name'])
+            wav = Audio(path / row['wav_file_name'])            
+            self.length.append(wav.length)            
             if signal_processing == 'wavelet':
                 wavdata = Wavelet(wav.sample_rate, wav.trimmed_data, )
                 coefficients, _ =  wavdata.generate_coefficients()                        
