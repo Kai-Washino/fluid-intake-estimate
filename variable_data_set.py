@@ -25,13 +25,14 @@ class VariableDataSet(DataSet):
     def __init__(self, num_samples, scale = 127, time_range = 70000, dimension = None):
         self.time_range = time_range
         self.dimension = dimension
+        self.scale = scale
         
         if scale == 0:
             self.X = np.zeros((num_samples, self.time_range))        
         elif dimension is None:
-            self.X = np.zeros((num_samples, scale, self.time_range))
+            self.X = np.zeros((num_samples, self.time_range, self.scale))
         else:
-            self.X = np.zeros((num_samples, scale, self.dimension))
+            self.X = np.zeros((num_samples, self.dimension, scale))
         self.y = np.zeros(num_samples)     
         self.length = []
 
@@ -56,7 +57,10 @@ class VariableDataSet(DataSet):
             data = self.trim_or_pad(normalized_spectrogram)        
         else:
             data = self.pca(normalized_spectrogram)
-            
+        if self.dimension is None:
+            data = data.reshape(self.time_range, self.scale)
+        else:
+            data = data.reshape(self.time_range, self.dimension)
         self.X[i] = data
         self.y[i] = y
    
@@ -85,6 +89,11 @@ class VariableDataSet(DataSet):
                 wavdata = RASTA(wav.sample_rate, wav.trimmed_data, )
                 filtered_signal = wavdata.filtering()
                 self.add_to_dataset(start_num + index, filtered_signal,  row['intake_volume'])
+            elif signal_processing == 'No':
+                if len(wav.trimmed_data.shape) > 1:
+                    wav.trimmed_data = wav.trimmed_data.mean(axis=1)                
+                self.add_to_dataset(start_num + index, wav.trimmed_data,  row['intake_volume'])
+                
             else:
                 print("name is not define")
 

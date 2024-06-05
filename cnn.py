@@ -12,7 +12,7 @@ class CNN(DenceNet):
         self.scale = scale
         self.time_range = time_range                
         self.model = tf.keras.models.Sequential([
-            Masking(mask_value=0.0, input_shape=(scale, time_range)),            
+            Masking(mask_value=0.0, input_shape=(time_range, scale)),            
             Conv1D(start_filter, 3, activation='relu'),  # 第1畳み込み層
             MaxPooling1D(2),  # 第1プーリング層
             Conv1D(start_filter * 2, 3, activation='relu'),  # 第2畳み込み層
