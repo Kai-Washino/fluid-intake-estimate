@@ -85,6 +85,11 @@ class VariableDataSet(DataSet):
                 wavdata = RASTA(wav.sample_rate, wav.trimmed_data, )
                 filtered_signal = wavdata.filtering()
                 self.add_to_dataset(start_num + index, filtered_signal,  row['intake_volume'])
+            elif signal_processing == 'No':
+                if len(wav.trimmed_data.shape) > 1:
+                    wav.trimmed_data = wav.trimmed_data.mean(axis=1)
+                self.add_to_dataset(start_num + index, wav.trimmed_data,  row['intake_volume'])
+                
             else:
                 print("name is not define")
 
