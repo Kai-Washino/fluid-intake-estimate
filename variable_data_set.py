@@ -36,11 +36,13 @@ class VariableDataSet(DataSet):
         self.y = np.zeros(num_samples)     
         self.length = []
 
-    def add_to_dataset(self, i, data, y):        
+    def add_to_dataset(self, i, data, y):            
         if isinstance(data, tuple):
             spectrogram = np.abs(data)
         else:
             spectrogram = data         
+        
+        
         
         if len(spectrogram) == 0:
             print("Warning: No data available for signal processing.") 
@@ -48,19 +50,19 @@ class VariableDataSet(DataSet):
             print(spectrogram)
             return 
                 
-        scaler_X = MinMaxScaler()
+        scaler_X = MinMaxScaler()        
         if spectrogram.ndim == 1:
-            spectrogram = spectrogram.reshape(-1, 1)  # 1次元配列を2次元配列に変換
-        normalized_spectrogram = scaler_X.fit_transform(spectrogram).flatten()
+            spectrogram = spectrogram.reshape(-1, 1)  # 1次元配列を2次元配列に変換               
+        normalized_spectrogram = scaler_X.fit_transform(spectrogram)        
                               
-        if self.dimension is None:
-            data = self.trim_or_pad(normalized_spectrogram)        
+        if self.dimension is None:           
+            data = self.trim_or_pad(normalized_spectrogram)              
+            data = data.reshape(self.time_range, self.scale)            
         else:
             data = self.pca(normalized_spectrogram)
-        if self.dimension is None:
-            data = data.reshape(self.time_range, self.scale)
-        else:
             data = data.reshape(self.time_range, self.dimension)
+
+            
         self.X[i] = data
         self.y[i] = y
    
@@ -83,7 +85,7 @@ class VariableDataSet(DataSet):
                 self.add_to_dataset(start_num + index, coefficients, row['intake_volume'])
             elif signal_processing == 'fft':
                 wavdata = FFT(wav.sample_rate, wav.trimmed_data, )
-                spectrogram = wavdata.generate_spectrogram()
+                spectrogram = wavdata.generate_spectrogram()                
                 self.add_to_dataset(start_num + index, spectrogram,  row['intake_volume'])            
             elif signal_processing == 'rasta':
                 wavdata = RASTA(wav.sample_rate, wav.trimmed_data, )
