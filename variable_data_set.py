@@ -54,9 +54,9 @@ class VariableDataSet(DataSet):
         if spectrogram.ndim == 1:
             spectrogram = spectrogram.reshape(-1, 1)  # 1次元配列を2次元配列に変換               
         normalized_spectrogram = scaler_X.fit_transform(spectrogram)        
-                              
+                
         if self.dimension is None:           
-            data = self.trim_or_pad(normalized_spectrogram)              
+            data = self.trim_or_pad(normalized_spectrogram)                
             data = data.reshape(self.time_range, self.scale)            
         else:
             data = self.pca(normalized_spectrogram)
@@ -102,35 +102,20 @@ class VariableDataSet(DataSet):
 
             
     def trim_or_pad(self, data):
-        if len(data.shape) == 1:
-            current_length = data.shape[0]
-            if current_length > self.time_range:
-                # トリミング            
-                trimmed_data = data[:self.time_range]                
-                return trimmed_data
-            elif current_length < self.time_range:
-                # パディング
-                padding_length = self.time_range - current_length
-                padded_data = np.pad(data, (0, padding_length), mode='constant', constant_values=0)                
-                return padded_data
-            else:
-                # そのまま返す
-                return data
-
-        else:    
-            current_length = data.shape[1]        
-            if current_length > self.time_range:
-                # トリミング            
-                trimmed_data = data[:, :self.time_range]       
-                return trimmed_data
-            elif current_length < self.time_range:
-                # パディング
-                padding_length = self.time_range - current_length
-                padded_data = np.pad(data, ((0, 0), (0, padding_length)), mode='constant', constant_values=0)
-                return padded_data
-            else:
-                # そのまま返す
-                return data  
+        current_length = data.shape[0]
+        if current_length > self.time_range:
+            # トリミング
+            trimmed_data = data[:self.time_range]
+            return trimmed_data
+        elif current_length < self.time_range:
+            # パディング
+            padding_length = self.time_range - current_length
+            padded_data = np.pad(data, ((0, padding_length), (0, 0)), mode='constant', constant_values=0)
+            return padded_data
+        else:
+            # そのまま返す
+            return data
+      
 
 if __name__ == "__main__":    
     path = pathlib.Path('C:/Users/S2/Documents/デバイス作成/2024測定デバイス/fluid_intake/dataset/ibuki')
