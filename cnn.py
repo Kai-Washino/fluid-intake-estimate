@@ -36,7 +36,7 @@ if __name__ == "__main__":
     from .variable_data_set import VariableDataSet
     import pathlib    
 
-    path = pathlib.Path('C:/Users/S2/Documents/デバイス作成/2024測定デバイス/flueid_intake/dataset/fake_data')
+    path = pathlib.Path('C:/Users/S2/Documents/デバイス作成/2024測定デバイス/fluid_intake/dataset/fake_data')
     csv_path = path / 'fake_data.csv'
     data = VariableDataSet(100)
     data.csv_to_dataset(path, csv_path, 0)
