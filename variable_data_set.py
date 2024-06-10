@@ -75,6 +75,7 @@ class VariableDataSet(DataSet):
             return transformed_data
     
     def csv_to_dataset(self, path, csv_path, start_num, signal_processing = "wavelet"):
+        self.signal_processing = signal_processing
         df = pd.read_csv(csv_path)        
         for index, row in df.iterrows():            
             wav = Audio(path / row['wav_file_name'])            
@@ -102,19 +103,51 @@ class VariableDataSet(DataSet):
 
             
     def trim_or_pad(self, data):
-        current_length = data.shape[0]
-        if current_length > self.time_range:
-            # トリミング
-            trimmed_data = data[:self.time_range]
-            return trimmed_data
-        elif current_length < self.time_range:
-            # パディング
-            padding_length = self.time_range - current_length
-            padded_data = np.pad(data, ((0, padding_length), (0, 0)), mode='constant', constant_values=0)
-            return padded_data
+        if(self.signal_processing == 'No'):
+            current_length = data.shape[0]
+            if current_length > self.time_range:
+                # トリミング
+                trimmed_data = data[:self.time_range]
+                return trimmed_data
+            elif current_length < self.time_range:
+                # パディング
+                padding_length = self.time_range - current_length
+                padded_data = np.pad(data, ((0, padding_length), (0, 0)), mode='constant', constant_values=0)
+                return padded_data
+            else:
+                # そのまま返す
+                return data
         else:
-            # そのまま返す
-            return data
+            if len(data.shape) == 1:
+                current_length = data.shape[0]
+                if current_length > self.time_range:
+                    # トリミング            
+                    trimmed_data = data[:self.time_range]                
+                    return trimmed_data
+                elif current_length < self.time_range:
+                    # パディング
+                    padding_length = self.time_range - current_length
+                    padded_data = np.pad(data, (0, padding_length), mode='constant', constant_values=0)                
+                    return padded_data
+                else:
+                    # そのまま返す
+                    return data
+
+            else:    
+                current_length = data.shape[1]        
+                if current_length > self.time_range:
+                    # トリミング            
+                    trimmed_data = data[:, :self.time_range]       
+                    return trimmed_data
+                elif current_length < self.time_range:
+                    # パディング
+                    padding_length = self.time_range - current_length
+                    padded_data = np.pad(data, ((0, 0), (0, padding_length)), mode='constant', constant_values=0)
+                    return padded_data
+                else:
+                    # そのまま返す
+                    return data  
+            
       
 
 if __name__ == "__main__":    
