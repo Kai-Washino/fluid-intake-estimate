@@ -6,7 +6,7 @@ import numpy as np
 from .dence_net import DenceNet
 
 class SelfAttentionModel(DenceNet):
-    def __init__(self, scale=1, time_range=5000, d_model=32, num_heads=2, num_layers=2, dff=128, dropout_rate=0.1):
+    def __init__(self, scale=1, time_range=5000, d_model=16, num_heads=2, num_layers=2, dff=128, dropout_rate=0.1):
         self.scale = scale
         self.time_range = time_range
 
@@ -14,7 +14,7 @@ class SelfAttentionModel(DenceNet):
         inputs = Input(shape=(time_range, scale))  # (70000, 1) の形状の入力
 
         # エンベディング
-        x = Dense(d_model)(inputs)  # Denseレイヤーを適用し、(70000, 64) の形状に変換
+        x = Dense(d_model)(inputs)  # Denseレイヤーを適用し、(70000, 16) の形状に変換
         x *= tf.math.sqrt(tf.cast(d_model, tf.float32))  # スケーリング
 
         # 位置エンコーディングの追加（省略可、必要に応じて追加）
