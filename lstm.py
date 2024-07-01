@@ -4,8 +4,7 @@ from tensorflow.keras.layers import Masking, LSTM, Dense
 from .dence_net import DenceNet
 
 class LSTMmodel(DenceNet):
-    def __init__(self, scale=1, time_range=70000, num_class=2, lstm_units=50):
-        self.num_class = num_class
+    def __init__(self, scale=1, time_range=70000, lstm_units=50):        
         self.scale = scale
         self.time_range = time_range
         self.model = tf.keras.models.Sequential([
